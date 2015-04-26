@@ -7,10 +7,6 @@
 Button{
 	-fx-cursor: hand ;
 }
-Button:hover{
-	-fx-background-color: rgb(192,192,192)  ;
-}
-
 
 #statusbar{
 } 

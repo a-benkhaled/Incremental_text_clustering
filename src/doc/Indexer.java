@@ -8,17 +8,32 @@ import java.util.HashSet;
 public class Indexer {
 
 	protected ArrayList<Document> listOfDocument;
-	protected HashSet<String> termSpace;
+	protected HashMap<String, Integer> termSpace;
 	protected HashMap<String, Integer> collectionFreq;//Apparence des terms dans la collections
+	//protected double[][] termDoc;
 	protected int numberOfDoc;
+	protected boolean stemming = true;
+
+	public Indexer() {}
 	
-	public Indexer() {
-		// TODO Auto-generated constructor stub
+	public void printVocabulary(){
+		System.out.println("Termspace size: " + termSpace.size());
+		System.out.println(termSpace);
 	}
-	
+	/**
+	 * Charger les fichiers (tokenization + stemming(paramétrable))
+	 * en même temps:
+	 * 		- calcul du nombre d'apparition des terms dans la collection
+	 * 		- et initialisation de l'espace des terms
+	 * @param path
+	 */
 	public void init(String path){
 		FileLoader loader = new FileLoader();
-		termSpace = new HashSet<String>();
+		if(stemming)
+			loader.stemmingOn();
+		else
+			loader.stemmingOff();
+		termSpace = new HashMap<>();
 		collectionFreq = new HashMap<>();
 		File folder = new File(path);
         File[] fileList= folder.listFiles();
@@ -27,20 +42,25 @@ public class Indexer {
         HashMap<String, Integer> tmpIndex;
         ArrayList<String> tmpTransaction;
         int count =0;
+        int index = 0;
         for (int i = 0; i < numberOfDoc; i++) {
-        	//for each doc
+        	//for each doc 
         	tmpIndex = loader.asIndex(path+fileList[i].getName());
         	tmpTransaction = loader.asTransaction(path+fileList[i].getName());
         	Document doc = new Document(fileList[i].getName(), tmpTransaction, tmpIndex);
         	listOfDocument.add(doc);
         	for(String key:tmpIndex.keySet()){//Màj des stats
         		if((collectionFreq.containsKey(key))){
+        			//Incrémenter la fréquences d'apparition du term (key) ds la collection
         			count = collectionFreq.get(key);
         			count++;
         			collectionFreq.put(key, count);
         		}else
-        			collectionFreq.put(key, 1); 
-        		termSpace.add(key);//Màj du vocabulaire
+        			collectionFreq.put(key, 1);
+        		if(!termSpace.containsKey(key)){//Màj du vocabulaire
+        			termSpace.put(key, index);
+        			index++;
+        		}
         	}
         }
         //Math.log10(freq[i]+1)*Math.log10((numberOfDoc+1)/(appeared[i] + 1));
@@ -55,20 +75,25 @@ public class Indexer {
         	listOfDocument.get(i).termWeights = weight;
         }
 	}
+	
 	public ArrayList<Document> getListOfDocument() {
 		return listOfDocument;
 	}
-
 
 	public int getNumberOfDoc() {
 		return numberOfDoc;
 	}
 	
+	public void setStemming(boolean stemming) {
+		this.stemming = stemming;
+	}
+	public HashMap<String, Integer> getTermSpace(){
+		return termSpace;
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Indexer index = new Indexer();
 		index.init("data\\train\\");
-		for(Document d: index.listOfDocument)
-			System.out.println(d.termWeights);
+		index.printVocabulary();
 	}
 }

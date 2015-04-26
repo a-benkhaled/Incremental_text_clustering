@@ -1,6 +1,7 @@
 package text_clustering;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import doc.Document;
 import doc.Indexer;
@@ -21,38 +22,73 @@ public class IncrementalClustering extends Cobweb{
 		super();
 		
 	}
-	
-	public void prepareInstances(ArrayList<WordsPattern> patt, ArrayList<Document> docx, 
-								int choice){
-		//choice = 0 : Fréquences, choice = 1: poids
-		FastVector attributs = new FastVector(patt.size());
-		for(int i=0; i<patt.size(); i++){
-			attributs.addElement(new Attribute(patt.get(i).toString(), i));
-		}
-		initDocSet = new Instances("docCollection", attributs, 
-				docx.size());
-		switch (choice){
-		case 0://Fréquences
-			for(Document d:docx){
-				d.initFreqAttr(patt);
-				Instance e = new Instance(1, d.getFreqAttr(), d.getFileName());
-				initDocSet.add(new Instance(e));
+	/**
+	 * Préparation du modèle de représentation des documents
+	 * et transformation de ce modèle en forme intermédiare (Instance)
+	 * pour pouvoir les communiquer à Weka
+	 * @param patt ensemble de term fréquents
+	 * @param vocabulary espace des terms
+	 * @param docx liste des documents
+	 * @param repType type de représentation
+	 * @param choice cas des ensemble de term fréquents 
+	 * 			0 : Fréquences, choice = 1: poids
+	 */
+	public void prepareInstances(ArrayList<WordsPattern> patt, HashMap<String, Integer> vocabulary, 
+			ArrayList<Document> docx, char repType, int choice){
+		
+		if(repType =='e'){//Ensemble de terms fréquents
+			//choice = 0 : Fréquences, choice = 1: poids
+			FastVector attributs = new FastVector(patt.size());
+			for(int i=0; i<patt.size(); i++){
+				attributs.addElement(new Attribute(patt.get(i).toString(), i));
 			}
-		break;
-		case 1://Poids
-			for(Document d:docx){
-				d.initWeightAttr(patt);
-				Instance e = new Instance(1, d.getWeightAttr(), d.getFileName());
-				initDocSet.add(new Instance(e));
+			initDocSet = new Instances("docCollection", attributs, docx.size());
+			switch (choice){
+			case 0://Fréquences
+				for(Document d:docx){
+					d.getWordSetFreq(patt);
+					Instance e = new Instance(1, d.getFreqAttr(), d.getFileName());
+					initDocSet.add(new Instance(e));
+				}
+			break;
+			case 1://Poids
+				for(Document d:docx){
+					d.getWordSetWeight(patt);
+					Instance e = new Instance(1, d.getWeightAttr(), d.getFileName());
+					initDocSet.add(new Instance(e));
+				}
+			break;
+			default:
+				for(Document d:docx){
+					d.getWordSetFreq(patt);
+					Instance e = new Instance(1, d.getFreqAttr(), d.getFileName());
+					initDocSet.add(new Instance(e));
+				}
+			break;
 			}
-		break;
-		default:
-			for(Document d:docx){
-				d.initFreqAttr(patt);
-				Instance e = new Instance(1, d.getFreqAttr(), d.getFileName());
-				initDocSet.add(new Instance(e));
+		}else{
+			FastVector attributs = new FastVector(vocabulary.size());
+			for(String term:vocabulary.keySet()){
+
+				attributs.addElement(new Attribute(term.toString(), vocabulary.get(term)));
 			}
-		break;
+			initDocSet = new Instances("docCollection", attributs, docx.size());
+			switch(repType){
+			case 'f'://Fréquences
+				for(Document d:docx){
+					d.getWordFreq(vocabulary);
+					Instance e = new Instance(1, d.getFreqAttr(), d.getFileName());
+					initDocSet.add(new Instance(e));
+				}
+			break;
+			case 'p'://Poids
+				for(Document d:docx){
+					d.getWordWeight(vocabulary);
+					Instance e = new Instance(1, d.getFreqAttr(), d.getFileName());
+					initDocSet.add(new Instance(e));
+				}
+			break;
+			}
 		}
 	}
 
@@ -86,9 +122,12 @@ public class IncrementalClustering extends Cobweb{
 			System.out.println(p);
 		}
 		IncrementalClustering classit = new IncrementalClustering();
-		classit.prepareInstances(fpgrowth.getPatternsList(), index.getListOfDocument(), 0);
-		for(int i=0; i<classit.initDocSet.numInstances(); i++)
-			System.out.println(classit.initDocSet.instance(i));
+		System.out.println();
+		classit.prepareInstances(null, index.getTermSpace(), 
+						index.getListOfDocument(), 'f',0);
+
+		//for(int i=0; i<classit.initDocSet.numInstances(); i++)
+		//	System.out.println(classit.initDocSet.instance(i));
 		try {
 			classit.buildClusterer(classit.initDocSet);
 			System.out.println(classit.graph());

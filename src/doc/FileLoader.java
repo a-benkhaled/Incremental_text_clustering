@@ -11,11 +11,11 @@ import edu.stanford.nlp.ling.tokensregex.TokenSequencePattern;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
 
-public class FileLoader {
+public class FileLoader  extends DocPreprocessor{
 	protected String tokenRegularExpression = "/[a-zA-Z]{2,}?/";
-	protected DocPreprocessor dp;
+	//protected DocPreprocessor dp;
 	public FileLoader(){
-		dp = new DocPreprocessor();
+		//dp = new DocPreprocessor();
 	}
 	
 	/*
@@ -26,7 +26,7 @@ public class FileLoader {
 		HashMap<String, Integer> tmp = new HashMap<>();
 		TokenSequencePattern reWords = TokenSequencePattern.compile(tokenRegularExpression);
 		TokenSequenceMatcher m;
-		dp.setStemming(true);
+		//dp.setStemming(true);
 		try {
 			PTBTokenizer ptbt = new PTBTokenizer( new FileReader(filePath), new CoreLabelTokenFactory(), "");
 			List<CoreLabel> tokens = ptbt.tokenize();
@@ -34,7 +34,7 @@ public class FileLoader {
 			String token="";
 			int c = 0;
 			while (m.find()) {
-				token = dp.cleanWord(m.group());
+				token = this.cleanWord(m.group());
 				if(!token.isEmpty())
 					if(tmp.containsKey(token)){
 						c = tmp.get(token);
@@ -68,7 +68,7 @@ public class FileLoader {
 			List<CoreLabel> tokens = ptbt.tokenize();
 			m = new TokenSequenceMatcher(reWords, tokens);
 			while (m.find()) {
-				token = dp.cleanWord(m.group());
+				token = this.cleanWord(m.group());
 				if(!token.isEmpty())
 					tmp.add(token);
 			}

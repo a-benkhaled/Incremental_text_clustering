@@ -3,13 +3,13 @@ package doc;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.HashSet;
-
+/**
+ * Cette classe implémente toutes 
+ * les techniques de prétraitement utilisées par
+ * le système 
+ * */
 public class DocPreprocessor {
-	/*
-	 * Cette classe implémente toutes 
-	 * les techniques de prétraitement utilisées par
-	 * le système 
-	 * */
+	
 	private HashSet<String> stopList;
 	private String stoplistPath = "data\\english.txt";
 	private boolean stemming = true;//Activer ou désactiver le stemming
@@ -32,9 +32,10 @@ public class DocPreprocessor {
 			System.err.println("DocPreprocessor: file not found ("+stoplistPath+")");
 		}
 	}
-	/*
+	/**
 	 * Prétraitement d'un mot à la fois
-	 * 
+	 * 		- Tester s'il appartient à la stoplist
+	 * 		- Radicalisation (optionnelle)
 	 * */
 	public String cleanWord(String word){
 		word = word.toLowerCase();
@@ -50,7 +51,10 @@ public class DocPreprocessor {
 				return word;
 		}
 	}
-	public void setStemming(boolean s) {
-		this.stemming = s;
+	public void stemmingOn() {
+		this.stemming = true;
+	}
+	public void stemmingOff() {
+		this.stemming = false;
 	}
 }
