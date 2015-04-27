@@ -1,5 +1,8 @@
 package ihm;
 
+import ihm_form.AlgoForm;
+import ihm_form.ParametrerRepForm;
+import ihm_form.SelectPretraitForm;
 import weka.classifiers.functions.supportVector.RBFKernel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -32,16 +35,26 @@ public class Menu_Create extends Menu {
 	public Menu_Create(String name) {
 		// TODO Auto-generated constructor stub
 		super(name);
+		/* *************** AFFICHAGE **************** ***/
+		//Menu bar items
+		
+		//Créer un nouvel modèle
 		MenuItem newModel = new MenuItem("Créer un nouvel modèle");
 		createNewModel();
+		//Charger un modèle
 		MenuItem loadModel = new MenuItem("Charger un modèle");
 		loadModel();
+		//Savegrder le modèle
 		MenuItem saveModel = new MenuItem("Savegrder le modèle");
 		saveModel();
+		//Quitter
 		MenuItem exit = new MenuItem("Quitter");
+		
 		this.getItems().addAll(newModel, new SeparatorMenuItem(), loadModel,
 				saveModel, new SeparatorMenuItem(), exit);
-
+		
+		/* *******************ACTIONS*******************************/
+		//Créer un nouvel modèle
 		newModel.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -56,7 +69,7 @@ public class Menu_Create extends Menu {
 				}
 			}
 		});
-
+		//Charger un modèle
 		loadModel.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -71,9 +84,8 @@ public class Menu_Create extends Menu {
 				}
 			}
 		});
-
+		//Savegrder le modèle
 		saveModel.setOnAction(new EventHandler<ActionEvent>() {
-
 			@Override
 			public void handle(ActionEvent arg0) {
 				// TODO Auto-generated method stub
@@ -109,6 +121,7 @@ public class Menu_Create extends Menu {
 		loadMenuInfo = new VBox();
 		loadMenuInfo.setPrefWidth(200);
 	}
+	
 	/**
 	 * Mise en forme de la fenêtre "créer un modele"
 	 **/
@@ -116,132 +129,28 @@ public class Menu_Create extends Menu {
 		createMenu = new GridPane();
 		createMenuInfo = new VBox();
 		createMenuInfo.setPrefWidth(200);
+		int line=0;
 		Label infoLabel = new Label("Créer d'un modèle");
 		infoLabel.setId("title");
 		createMenuInfo.getChildren().add(infoLabel);
-
-		int line = 0;
-		createMenu.setHgap(10);
-		createMenu.setVgap(10);
-		createMenu.setPadding(new Insets(0, 10, 0, 10));
-		lblCreate = new Label("Création d'un nouvel modèle");
-		lblCreate.setId("title");
-		tfName = new TextField();
-		lblSelect = new Label("Sélection de document");
-		lblSelect.setId("title");
-		fcLearn = new Button("Ajouter");
-		fcUniverse = new Button("Ajouter");
-		lblPret = new Label("Paramètres de prétraitement");
-		lblPret.setId("title");
-		cbStem = new CheckBox("Radicalisation (Stemming)");
-		fcSL = new Button("Ajouter");
-		fcScript = new Button("Ajouter");
-		lblRep = new Label("Paramètres de représentation");
-		lblRep.setId("title");
-		RadioButton rbFreq = new RadioButton("Fréquences d'apparition des termes");
-		RadioButton rbPoids = new RadioButton("Poids des termes");
-		rbWordSet= new RadioButton("Ensemble de termes fréquents");
-		tgRep = new ToggleGroup();
-		rbFreq.setToggleGroup(tgRep);
-		rbPoids.setToggleGroup(tgRep);
-		rbWordSet.setToggleGroup(tgRep);
-		tgWSfp = new ToggleGroup();
-		tgWSmc = new ToggleGroup();
-		tfMinSupp = new TextField();tfMinSupp.setDisable(true);
-		tfMaxSupp = new TextField();tfMaxSupp.setDisable(true);
-		tfMaxNb= new TextField();tfMaxNb.setDisable(true);
-		tfMinNb = new TextField();tfMinNb.setDisable(true);
-		rbWSFreq = new RadioButton("Fréquences d'apparition des ensembles");
-		rbWSPoi = new RadioButton("Poids des ensembles");
-		rbWSMax = new RadioButton("Ensemble maximal");
-		rbWSCLos = new RadioButton("Ensemble fermé");
-		rbWSFreq.setToggleGroup(tgWSfp);rbWSFreq.setDisable(true);
-		rbWSPoi.setToggleGroup(tgWSfp);rbWSPoi.setDisable(true);
-		rbWSCLos.setToggleGroup(tgWSmc);rbWSCLos.setDisable(true);
-		rbWSMax.setToggleGroup(tgWSmc);rbWSMax.setDisable(true);
 		
-		lblAlgo = new Label("Paramètres de l'algorithme de clustering");
-		lblAlgo.setId("title");
-		tfCutoff = new TextField();
-		tfAcquity = new TextField();
+		//Selection et prétraitement
+		SelectPretraitForm spForm = new SelectPretraitForm();
+		createMenu.add(spForm, 0, ++line, 2, 1);
+		
+		//Représentation
+		ParametrerRepForm repForm = new ParametrerRepForm();
+		createMenu.add(repForm, 0, ++line, 2, 1);
+		
+		//Algorithme
+		AlgoForm algoForm = new AlgoForm();
+		createMenu.add(algoForm, 0, ++line, 2, 1);
+		
+		//Créer
 		btnCreate = new Button("Créer");
-		btnCreate.setId("createButton");
-
-		// Création d'un nouvel modèle
-		createMenu.add(lblCreate, 0, line, 2, 1);
-		createMenu.addRow(++line, new Label("Nom"), tfName);
-		createMenu.add(new Separator(), 0, ++line, 2, 1);
-
-		// Sélection de document
-		createMenu.add(lblSelect, 0, ++line, 2, 1);
-		createMenu.addRow(++line, new Label(
-				"Ajouter à l'ensemble d'apprentissage"), fcLearn);
-		createMenu.addRow(++line, new Label(
-				"Ajouter au vocabulaire (optionnel)"), fcUniverse);
-		createMenu.add(new Separator(), 0, ++line, 2, 1);
-
-		// Paramètres de prétraitement
-		createMenu.add(lblPret, 0, ++line, 2, 1);
-		createMenu.add(cbStem, 0, ++line);
-		createMenu.addRow(++line, new Label("Ajouter une liste de mots vides"),
-				fcSL);
-		createMenu.addRow(++line, new Label(
-				"Ajouter un script de prétraitement"), fcScript);
-		createMenu.add(new Separator(), 0, ++line, 2, 1);
-
-		// Paramètres de représentation
-		createMenu.add(lblRep, 0, ++line, 2, 1);
-		createMenu.add(rbFreq, 0, ++line);
-		createMenu.add(rbPoids, 0, ++line);
-		createMenu.add(rbWordSet, 0, ++line);
-		createMenu.addRow(++line, new Label("Support minimal"), tfMinSupp);
-		createMenu.addRow(++line, new Label("Support maximal"), tfMaxSupp);
-		createMenu.add(rbWSFreq, 0, ++line);
-		createMenu.add(rbWSPoi, 0, ++line);
-		createMenu.addRow(++line, new Label("Nombre minimal de term"), tfMinNb);
-		createMenu.addRow(++line, new Label("Nombre maximal de term"), tfMaxNb);
-		createMenu.add(rbWSMax, 0, ++line);
-		createMenu.add(rbWSCLos, 0, ++line);
-		createMenu.add(new Separator(), 0, ++line, 2, 1);
-
-		// Paramètres de l'algorithme de clustering
-		createMenu.add(lblAlgo, 0, ++line, 2, 1);
-		createMenu.addRow(++line, new Label("Cutoff"), tfCutoff);
-		createMenu.addRow(++line, new Label("Acquity"), tfAcquity);
-		createMenu.add(new Separator(), 0, ++line, 2, 1);
-
 		createMenu.add(btnCreate, 1, ++line, 2, 1);
-		runtimeEvents();
-		
 	}
 	
-	private void runtimeEvents() {
-		rbWordSet.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				rbWordSet.setDisable(false);
-				rbWSFreq.setDisable(false);
-				rbWSPoi.setDisable(false);
-				rbWSMax.setDisable(false);
-				rbWSCLos.setDisable(false);
-				tfMinSupp.setDisable(false);
-				tfMaxSupp.setDisable(false);
-				tfMinNb.setDisable(false);
-				tfMaxNb.setDisable(false);
-			}
-		});
-		btnCreate.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				createConfirmation();
-			}
-		});
-	}
-
 	/**
 	 * Teste la validité du paramétrage du modèle
 	 * Extraction des options du modèle
@@ -373,10 +282,5 @@ public class Menu_Create extends Menu {
 	protected TextField tfCutoff;
 	protected TextField tfAcquity;
 	protected Button btnCreate;
-	protected RadioButton rbWordSet;
-	protected RadioButton rbWSFreq;
-	protected RadioButton rbWSPoi;
-	protected RadioButton rbWSMax;
-	protected RadioButton rbWSCLos;
 
 }
