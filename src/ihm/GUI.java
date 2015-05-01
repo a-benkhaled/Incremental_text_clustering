@@ -1,18 +1,11 @@
 package ihm;
 	
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
@@ -20,10 +13,10 @@ public class GUI extends Application {
 	
 	static ScrollPane scrollingView;
 	static BorderPane subMainView;
+	public static BorderPane infoMainView;
 	
 	@Override
 	public void start(Stage primaryStage) {
-		
 		primaryStage.setScene(initScene());
 		primaryStage.show();
 	}
@@ -31,21 +24,18 @@ public class GUI extends Application {
 	private Scene initScene() {
 		// TODO Auto-generated method stub
 		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 620, 675);
-		/*
-		infoView = new VBox();
-		infoView.setPrefWidth(200);
-		*/
+		Scene scene = new Scene(root, 670, 675);
+
 		subMainView = new BorderPane();
 		scrollingView = new ScrollPane();
-		/*
-		mainView = new GridPane();
-		mainView.setHgap(10);
-		mainView.setVgap(10);
-		mainView.setPadding(new Insets(0, 10, 0, 10));
-		scrollingView.setContent(mainView);
-		*/
+		infoMainView = new BorderPane();
+		scrollingView.setMinWidth(470);
+		infoMainView.setPrefWidth(200);
+
+		Label lblHelp = new Label("Aide");lblHelp.setId("title");
+		infoMainView.setTop(lblHelp);
 		subMainView.setCenter(scrollingView);
+		subMainView.setRight(infoMainView);
 		HBox statusbar = new HBox();
 		IHMenu menuBar = new IHMenu();
 		

@@ -19,8 +19,26 @@ public class AlgoForm extends Form {
 		this.addRow(++line, new Label("Cutoff"), tfCutoff);
 		this.addRow(++line, new Label("Acquity"), tfAcquity);
 		this.add(new Separator(), 0, ++line, 2, 1);
+		
+		//Valeurs par défaut
+		tfAcquity.setText("0.1");
+		tfCutoff.setText("0.002");
 	}
-
+	
+	public float getCutOff(){
+		if(tfCutoff.getText().isEmpty())
+			return -1;
+		else
+			return Float.valueOf(tfCutoff.getText());
+	}
+	
+	public float getAcuity(){
+		if(tfAcquity.getText().isEmpty())
+			return -1;
+		else
+			return Float.valueOf(tfAcquity.getText());
+	}
+	
 	protected Label lblAlgo;
 	protected TextField tfCutoff;
 	protected TextField tfAcquity;

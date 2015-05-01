@@ -9,4 +9,8 @@ Button{
 }
 
 #statusbar{
-} 
+}
+#lblhelp{
+	-fx-text-alignment: justify ;
+	-fx-text-overrun: word-ellipsis    ;
+}

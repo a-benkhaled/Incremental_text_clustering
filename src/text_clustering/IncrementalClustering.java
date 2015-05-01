@@ -69,7 +69,6 @@ public class IncrementalClustering extends Cobweb{
 		}else{
 			FastVector attributs = new FastVector(vocabulary.size());
 			for(String term:vocabulary.keySet()){
-
 				attributs.addElement(new Attribute(term.toString(), vocabulary.get(term)));
 			}
 			initDocSet = new Instances("docCollection", attributs, docx.size());
@@ -78,13 +77,15 @@ public class IncrementalClustering extends Cobweb{
 				for(Document d:docx){
 					d.getWordFreq(vocabulary);
 					Instance e = new Instance(1, d.getFreqAttr(), d.getFileName());
+					System.out.println(d.getFreqAttr());
 					initDocSet.add(new Instance(e));
 				}
 			break;
 			case 'p'://Poids
 				for(Document d:docx){
 					d.getWordWeight(vocabulary);
-					Instance e = new Instance(1, d.getFreqAttr(), d.getFileName());
+					Instance e = new Instance(1, d.getWeightAttr(), d.getFileName());
+					System.out.println(d.getWeightAttr());
 					initDocSet.add(new Instance(e));
 				}
 			break;

@@ -1,5 +1,6 @@
 package ihm_form;
 
+import weka.classifiers.trees.REPTree;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
@@ -9,8 +10,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 /**
  * Formulaire "Paramètre de représentation"
- * 
- *
  */
 public class ParametrerRepForm extends Form{
 	
@@ -63,6 +62,14 @@ public class ParametrerRepForm extends Form{
 		this.add(rbWSCLos, 0, ++line);
 		this.add(new Separator(), 0, ++line, 2, 1);
 
+		//Valeurs par défaut
+		rbWSMax.setSelected(true);
+		tfMinSupp.setText("20");
+		tfMaxSupp.setText("50");
+		tfMinNb.setText("1");
+		tfMaxNb.setText("3");
+		rbWSPoi.setSelected(true);
+		rbPoids.setSelected(true);
 		runtimeEventsHandler();
 	}
 
@@ -134,7 +141,76 @@ public class ParametrerRepForm extends Form{
 			}
 		});
 	}
+	public char getRepType(){
+		if(rbWordSet.isSelected())
+			return  'e';
+		if (rbFreq.isSelected())
+			return 'f';
+		if (rbPoids.isSelected())
+			return 'p';
+		return 'n';
+	}
+	/**
+	 * Valeur retournée
+	 * Fréquence: 0
+	 * Poids : 1
+	 * @return
+	 */
+	
+	public int getRepTypeWS(){
+		if(rbWSFreq.isSelected())
+			return 0;
+		if(rbWSPoi.isSelected())
+			return 1;
+		return -1;
+	}
+	
 
+	public float getMinSupp() {
+		// TODO Auto-generated method stub
+		if(tfMinSupp.getText().isEmpty())
+			return -1;
+		else
+			return Float.valueOf(tfMinSupp.getText());
+	}
+
+	public float getMaxSupp() {
+		// TODO Auto-generated method stub
+		if(tfMaxSupp.getText().isEmpty())
+			return -1;
+		else
+			return Float.valueOf(tfMaxSupp.getText());
+	}
+
+	public int getMinTermNb() {
+		// TODO Auto-generated method stub
+		if(tfMinNb.getText().isEmpty())
+			return -1;
+		else
+			return Integer.valueOf(tfMinNb.getText());
+	}
+
+	public int getMaxTermNb() {
+		// TODO Auto-generated method stub
+		if(tfMaxNb.getText().isEmpty())
+			return -1;
+		else
+			return Integer.valueOf(tfMaxNb.getText());
+	}
+	/**
+	 * Valeurs retournées
+	 * c:closed
+	 * m:max
+	 * @return
+	 */
+	public char getWordSetForm() {
+		// TODO Auto-generated method stub
+		if(rbWSCLos.isSelected())
+			return 'c';
+		
+		return 'm';
+	}
+	
 	protected Label lblRep;
 	protected ToggleGroup tgRep;
 	protected ToggleGroup tgWSfp;
