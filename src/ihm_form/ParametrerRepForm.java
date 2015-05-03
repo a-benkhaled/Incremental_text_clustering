@@ -77,6 +77,7 @@ public class ParametrerRepForm extends Form{
 	 * Prise en charge des événements de type temps réel
 	 */
 	private void runtimeEventsHandler() {
+		
 		//RadioButton Fréquences
 		rbFreq.setOnAction(new EventHandler<ActionEvent>() {
 

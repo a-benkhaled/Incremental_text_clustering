@@ -115,8 +115,7 @@ public class PatternMiner {
 			String sb;
 			for (ArrayList<String> patt : transactionsList) {
 				sb = patt.toString();
-				// Se débarasser des crochets '[', ']'
-				sb = sb.substring(1, sb.length() - 1);
+				sb = sb.substring(1, sb.length() - 1);// Se débarasser des crochets '[', ']'
 				writer.println(sb);
 			}
 			writer.close();

@@ -2,7 +2,6 @@ package ihm;
 
 import ihm_form.AlgoForm;
 import ihm_form.ConfirmForm;
-import ihm_form.Form;
 import ihm_form.ModelInfoForm;
 import ihm_form.ParametrerRepForm;
 import ihm_form.SelectPretraitForm;
@@ -13,11 +12,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import text_clustering.IncrementalClustering;
 import word_mining.PatternMiner;
@@ -163,9 +162,7 @@ public class Menu_Create extends Menu {
 			@Override
 			public void handle(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				//extractValidateParam();
-				extractionParam();
-				startTheSystem();
+				extractValidateParam();
 			}
 		});
 	}
@@ -174,6 +171,7 @@ public class Menu_Create extends Menu {
 	 * Teste la validité du paramétrage du modèle
 	 * Extraction des options du modèle
 	 * */
+	
 	protected void extractValidateParam(){
 		extractionParam();
 		createConfirmWin();
@@ -189,11 +187,11 @@ public class Menu_Create extends Menu {
 		pathTermSpaceSet = formSelectPret.getPathUniverse();
 		pathStopListe = formSelectPret.getPathStopListe();
 		pathScript = formSelectPret.getPathScript();
+		stemming = formSelectPret.getRadicalisation();
 		
 		//Paramètres de représentation
 		repType = formRep.getRepType();
 
-		System.out.println(repType);
 		if (repType == 'e'){
 			repTypeWS = formRep.getRepTypeWS();
 			minSupp = formRep.getMinSupp();
@@ -201,24 +199,20 @@ public class Menu_Create extends Menu {
 			minTermNb = formRep.getMinTermNb();
 			maxTermNb = formRep.getMaxTermNb();
 			repTypeWSForm = formRep.getWordSetForm();
-			System.out.println(repTypeWS + ", "
-					+minSupp+ ", "
-					+maxSupp+ ", "
-					+minTermNb+ ", "
-					+maxTermNb + ", " +repTypeWSForm);
 		}
 		
 		//Paramètres de l'algorithme
 		acuity = formAlgo.getAcuity();
 		cutoff = formAlgo.getCutOff();
-		System.out.println(acuity + ", " + cutoff );
 	}
 	
 	protected void createConfirmWin() {
 		// TODO Auto-generated method stub
 		Stage stage = new Stage();
 		BorderPane main = new BorderPane();
-		Scene scene = new Scene(main, 400, 400);
+		Scene scene = new Scene(main);
+		Button btnLaunch = new Button("Lancer");
+		ProgressBar pbSystem  = new ProgressBar();
 		
 		ConfirmForm confirm = new ConfirmForm();
 		confirm.setModelName(modelName);
@@ -229,6 +223,7 @@ public class Menu_Create extends Menu {
 		confirm.setPathScript(pathScript);
 		confirm.setRepType(repType);
 		confirm.setRepTypeWS(repTypeWS);
+		confirm.setRepTypeWSForm(repTypeWSForm);
 		confirm.setMinSupp(minSupp);
 		confirm.setMaxSupp(maxSupp);
 		confirm.setMinTermNb(minTermNb);
@@ -237,11 +232,25 @@ public class Menu_Create extends Menu {
 		confirm.setAcuity(acuity);
 		confirm.create();
 		
+		btnLaunch.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				// TODO Auto-generated method stub
+				startTheSystem();
+			}
+		});
+		
+		stage.setResizable(false);
 		main.setTop(confirm);
+		main.setCenter(btnLaunch);
 		stage.setScene(scene);
 		stage.show();
 	}
 
+	/**
+	 * Lancer le système de clustering
+	 */
 	protected void startTheSystem() {
 		// TODO Auto-generated method stub
 		
@@ -308,9 +317,6 @@ public class Menu_Create extends Menu {
 	protected boolean saveMenuOn = false;
 	protected GridPane createMenu;
 	protected GridPane loadMenu;
-	//protected VBox loadMenuInfo;
-	//protected VBox createMenuInfo;
-	//protected VBox saveMenuInfo;
 	protected GridPane saveMenu;
 	protected Button btnCreate;
 }

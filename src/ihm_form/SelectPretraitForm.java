@@ -76,7 +76,8 @@ public class SelectPretraitForm extends Form {
 				dc.setTitle("Ajouter à l'ensemble d'apprentissage");
 				File selectedFile = dc.showDialog(formTmpStage);
 				if(selectedFile != null){
-						pathLearnSet.append(selectedFile.getAbsolutePath()+"\\");
+						pathLearnSet.replace(0, pathLearnSet.length(), 
+								selectedFile.getAbsolutePath()+"\\");
 					}
 			}
 		});
