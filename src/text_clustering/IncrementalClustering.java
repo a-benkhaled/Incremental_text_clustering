@@ -14,14 +14,20 @@ import word_mining.PatternMiner;
 import word_mining.WordsPattern;
 
 public class IncrementalClustering extends Cobweb{
-
+	protected String modelName;
 	protected Instances initDocSet;
 	
+	public IncrementalClustering(String name) {
+		// TODO Auto-generated constructor stub
+		super();
+		modelName = name;
+	}
 	public IncrementalClustering() {
 		// TODO Auto-generated constructor stub
 		super();
 		
 	}
+
 	/**
 	 * Préparation du modèle de représentation des documents
 	 * et transformation de ce modèle en forme intermédiare (Instance)
@@ -110,6 +116,12 @@ public class IncrementalClustering extends Cobweb{
 			System.out.println(initDocSet.instance(i));
 	}
 	
+	
+	
+	
+	public String getModelName() {
+		return modelName;
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Indexer index = new Indexer();

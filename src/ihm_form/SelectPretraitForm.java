@@ -144,6 +144,7 @@ public class SelectPretraitForm extends Form {
 		
 	}
 	
+	//Getters
 	public String getPathLearnSet() {
 		return pathLearnSet.toString();
 	}

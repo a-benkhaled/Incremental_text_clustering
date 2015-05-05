@@ -13,7 +13,7 @@ public class IHMenu extends MenuBar{
 	
 	IHMenu(){
 		super();
-		fileMenu = new Menu_Create("Fichier");
+		fileMenu = new Menu_File("Fichier");
 		helpMenu = new Menu_About("Aide");
 		this.getMenus().addAll(fileMenu, helpMenu);
 	}
