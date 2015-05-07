@@ -8,20 +8,22 @@ import ihm_form.SelectPretraitForm;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.BorderPane;
@@ -132,9 +134,18 @@ public class Menu_File extends Menu {
 			try {
 				ObjectOutputStream OS;
 				OS = new ObjectOutputStream(new FileOutputStream(f));
+				Alert alert = new Alert(AlertType.INFORMATION );
+				alert.getDialogPane().getChildren().remove(2);
+				ProgressIndicator pin = new ProgressIndicator();
+				alert.getDialogPane().getChildren().add(pin);
+				alert.setTitle("Sauvegarde en cours");
+				alert.setHeaderText("Sauvegarde du modèle en cours... Veuillez patientez.");
+				alert.show();
 				OS.writeObject(classit);
 				OS.flush();
 				OS.close();
+				alert.hide();
+				alert.close();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -157,9 +168,38 @@ public class Menu_File extends Menu {
 		if(f != null){
 			try {
 				ObjectInputStream IS = new ObjectInputStream(new FileInputStream(f)) ;
-				classit = (IncrementalClustering) IS.readObject() ; 
+				Alert alert = new Alert(AlertType.INFORMATION );
+				alert.getDialogPane().getChildren().remove(2);
+				ProgressIndicator pin = new ProgressIndicator();
+				alert.getDialogPane().getChildren().add(pin);
+				alert.setTitle("Chargement en cours");
+				alert.setHeaderText("Chargement du modèle en cours... Veuillez patientez.");
+				alert.show();
+				classit = (IncrementalClustering) IS.readObject();
 				IS.close();
+				alert.hide();
+				alert.close();
+				/*
 				System.out.println(classit.getModelName());
+				ConfirmForm confirm = new ConfirmForm();
+				confirm.setModelName(modelName);
+				confirm.setPathLearningSet(pathLearningSet);
+				confirm.setPathTermSpaceSet(pathTermSpaceSet);
+				confirm.setStemming(stemming);
+				confirm.setPathStopListe(pathStopListe);
+				confirm.setPathScript(pathScript);
+				confirm.setRepType(repType);
+				confirm.setRepTypeWS(repTypeWS);
+				confirm.setRepTypeWSForm(repTypeWSForm);
+				confirm.setMinSupp(minSupp);
+				confirm.setMaxSupp(maxSupp);
+				confirm.setMinTermNb(minTermNb);
+				confirm.setMaxTermNb(maxTermNb);
+				confirm.setCutoff(cutoff);
+				confirm.setAcuity(acuity);
+				confirm.create();
+				GUI.scrollingView.setContent(confirm);
+				*/
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
