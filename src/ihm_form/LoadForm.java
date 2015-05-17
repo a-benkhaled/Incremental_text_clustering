@@ -1,30 +1,26 @@
 package ihm_form;
 
-import java.awt.Button;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 
-import text_clustering.IncrementalClustering;
-import word_mining.PatternMiner;
-import doc.Indexer;
-import javafx.geometry.Insets;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+import text_clustering.IncrementalClustering;
 
-public class ConfirmForm extends Form{
-	public int line = 0;
-	private String[] setValues  = {"Fréquences", "Poids (tf-idf)"};
+public class LoadForm extends Form {
+
 	private IncrementalClustering classit;
-	public ConfirmForm(IncrementalClustering c) {
-		// TODO Auto-generated constructor stub
-		super();
+	private int line = 0;
+	private String[] setValues  = {"Fréquences", "Poids (tf-idf)"};
+	public LoadForm(IncrementalClustering c) {
+		// Mise en forme
+		Button btnAddDocx = new Button("Ajouter des documents");
 		classit = c;
-	}
-	
-	/**
-	 * Mise en place des widgets
-	 */
-	public void create(){
-		//Mise en forme
 		this.addRow(++line, new Label("Nom du modèle: "), new Label(classit.getModelName()));
 		this.addRow(++line, new Label("Ensemble d'apprentissage: "), new Label(
 				classit.getPathLearningSet()));
@@ -64,9 +60,45 @@ public class ConfirmForm extends Form{
 			if (classit.getRepType() == 'p')
 				this.addRow(++line, new Label("Type de représentation: "),
 						new Label("Poids (tf-idf)"));
-
-			this.addRow(++line, new Label("Cutoff: "), new Label(classit.getCutoff() + ""));
-			this.addRow(++line, new Label("Acuity: "), new Label(classit.getAcuity() + ""));
 		}
+		
+		this.addRow(++line, new Label("Cutoff: "), new Label((float)classit.getCutoff() + ""));
+		this.addRow(++line, new Label("Acuity: "), new Label(classit.getAcuity() + ""));
+		this.addRow(++line, new Label("Nombre de documents: "), 
+				new Label(classit.getIndex().getNumberOfDoc() + ""));
+		this.addRow(++line, new Label("Taille du vocabulaire: "), 
+				new Label(classit.getIndex().getTermSpace().size() + ""));
+		
+		this.addRow(++line, btnAddDocx);
+		btnAddDocx.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				// TODO Auto-generated method stub
+				DirectoryChooser  dc = new DirectoryChooser ();
+				String path;
+				dc.setTitle("Ajouter ...");
+				Stage stage = new Stage();
+				File selectedFile = dc.showDialog(stage);
+				if(selectedFile != null){
+					path = selectedFile.getAbsolutePath()+"\\";
+					classit.getIndex().incIndex(path);
+					//Clustering incrémental
+					classit.incClusterInstances(classit.getIndex());
+					FileWriter fstream;
+					try {
+						System.out.println(classit.graph());
+						fstream = new FileWriter("data\\graph\\"+classit.getModelName()+".graph");
+						BufferedWriter out = new BufferedWriter(fstream);
+						out.write(classit.graph());
+						out.close();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 	}
+
 }

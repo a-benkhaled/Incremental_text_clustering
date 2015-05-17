@@ -1,8 +1,9 @@
 package word_mining;
 
+import java.io.Serializable;
 import java.util.HashSet;
 
-public class WordsPattern {
+public class WordsPattern implements Serializable{
 	
 	protected HashSet<String> wordSet;
 	protected float support;

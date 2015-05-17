@@ -5,7 +5,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 
 public class AlgoForm extends Form {
-
+	public int line = 0;
 	public AlgoForm() {
 		// TODO Auto-generated constructor stub
 		super();
@@ -21,7 +21,7 @@ public class AlgoForm extends Form {
 		this.add(new Separator(), 0, ++line, 2, 1);
 		
 		//Valeurs par défaut
-		tfAcquity.setText("0.1");
+		tfAcquity.setText("1.0");
 		tfCutoff.setText("0.002");
 	}
 	

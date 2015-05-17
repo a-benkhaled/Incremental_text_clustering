@@ -18,7 +18,7 @@ public class MouseEnteredInfo implements EventHandler{
 		Text txthelp = new Text(msg);
 		txthelp.setId("lblhelp");
 		tmpInfo.getChildren().add(txthelp);
-		GUI.infoMainView.setCenter(tmpInfo);
+		//GUI.infoMainView.setCenter(tmpInfo);
 	}
 
 }

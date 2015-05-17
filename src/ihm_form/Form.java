@@ -8,12 +8,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class Form extends GridPane{
-	protected int line;
 	public Stage formTmpStage;
 	public Form() {
 		// TODO Auto-generated constructor stub
 		super();
-		line =0;
 		formTmpStage = new Stage();
 		this.setHgap(10);
 		this.setVgap(10);

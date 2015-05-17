@@ -5,7 +5,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 
 public class ModelInfoForm extends Form{
-	
+	public int line = 0;
 	public ModelInfoForm() {
 		// TODO Auto-generated constructor stub
 		super();

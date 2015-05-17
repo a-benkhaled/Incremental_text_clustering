@@ -1,12 +1,13 @@
 package doc;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
 import word_mining.WordsPattern;
 
-public class Document {
+public class Document  implements Serializable{
 	public String getFileName() {
 		return fileName;
 	}
@@ -15,6 +16,7 @@ public class Document {
 	protected ArrayList<String> transaction;
 	protected HashMap<String, Integer> termFrequencies;
 	protected HashMap<String, Float> termWeights;
+
 	//Ci-dessous deux vecteurs pour représenter le document
 	//Ils peuvent être en fonction de l'espace des termes
 	//ou l'ensemble des terms fréquents
@@ -110,6 +112,9 @@ public class Document {
 	public double[] getWeightAttr() {
 		return weightAttr;
 	}
-	
+
+	public HashMap<String, Float> getTermWeights() {
+		return termWeights;
+	}
 	
 }

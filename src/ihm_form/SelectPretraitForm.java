@@ -22,6 +22,7 @@ public class SelectPretraitForm extends Form {
 	protected StringBuilder pathStopListe;
 	protected StringBuilder pathScript;
 
+	public int line = 0;
 	public SelectPretraitForm() {
 		// TODO Auto-generated constructor stub
 		lblSelect = new Label("Sélection et prétraitement de document");
@@ -53,7 +54,7 @@ public class SelectPretraitForm extends Form {
 		pathLearnSet.append("data\\train\\");
 		cbStem.setSelected(true);
 		
-		runtimeEventsHandler();
+		//runtimeEventsHandler();
 	}
 
 	/**

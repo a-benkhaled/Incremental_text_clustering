@@ -11,7 +11,7 @@ public class MouseExitedInfo implements EventHandler{
 	public void handle(Event arg0) {
 		// TODO Auto-generated method stub
 		VBox empty = new VBox();
-		GUI.infoMainView.setCenter(empty);
+		//GUI.infoMainView.setCenter(empty);
 	}
 
 }

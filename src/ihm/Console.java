@@ -37,8 +37,7 @@ public class Console {
 		classit = new IncrementalClustering();
 		classit.setAcuity(0.0001);
 		//classit.setCutoff(0.002);//min cu
-		classit.prepareInstances(fpgrowth.getPatternsList(), index.getTermSpace(), 
-				index.getListOfDocument(), 'f',1);
+		classit.prepareInstances();
 		//classit.printInstances();
 		try {
 			classit.startClustering();

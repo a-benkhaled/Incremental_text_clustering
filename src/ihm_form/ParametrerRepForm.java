@@ -12,7 +12,7 @@ import javafx.scene.control.ToggleGroup;
  * Formulaire "Paramètre de représentation"
  */
 public class ParametrerRepForm extends Form{
-	
+	public int line = 0;
 	public ParametrerRepForm() {
 		// TODO Auto-generated constructor stub
 		super();
