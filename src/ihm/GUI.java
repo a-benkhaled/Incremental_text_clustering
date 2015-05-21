@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 public class GUI extends Application {
 	
 	//static ScrollPane scrollingView;
-	static BorderPane subMainView;
+	public static BorderPane subMainView;
 	//public static BorderPane infoMainView;
 	
 	@Override
@@ -29,24 +29,16 @@ public class GUI extends Application {
 		// TODO Auto-generated method stub
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root, 670, 675);
-
-		subMainView = new BorderPane();
-		//scrollingView = new ScrollPane();
-		//infoMainView = new BorderPane();
-		//scrollingView.setMinWidth(470);
-		//infoMainView.setPrefWidth(200);
-
-		Label lblHelp = new Label("Aide");lblHelp.setId("title");
-		//infoMainView.setTop(lblHelp);
-		//subMainView.setCenter(scrollingView);
-		//subMainView.setRight(infoMainView);
+		subMainView = new BorderPane();subMainView.setId("mainPane");
+		
 		HBox statusbar = new HBox();
 		IHMenu menuBar = new IHMenu();
-		
+		statusbar.setPrefHeight(20);
 		/*Charger CSS*/
 		try {
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		    statusbar.setId("statusbar");
+		    menuBar.setId("menubar");
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

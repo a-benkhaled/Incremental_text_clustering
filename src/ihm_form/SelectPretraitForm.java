@@ -54,7 +54,7 @@ public class SelectPretraitForm extends Form {
 		pathLearnSet.append("data\\train\\");
 		cbStem.setSelected(true);
 		
-		//runtimeEventsHandler();
+		runtimeEventsHandler();
 	}
 
 	/**

@@ -19,6 +19,7 @@ import java.io.StringReader;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -56,6 +57,9 @@ public class Menu_File extends Menu {
 	private IHMenu sourceMenu;
 	private BorderPane infoMainView;
 	private ScrollPane scrollingView;
+	
+	protected ProgressBar pbClustering;
+	
 	public Menu_File(String name, IHMenu sm) {
 		// TODO Auto-generated constructor stub
 		super(name);
@@ -66,20 +70,21 @@ public class Menu_File extends Menu {
 		infoMainView.setTop(lblHelp);
 		scrollingView = new ScrollPane();
 		scrollingView.setMinWidth(470);
+		
 		/* *************** AFFICHAGE **************** ** */
 		// Menu bar items
 
 		// Créer un nouvel modèle
-		MenuItem newModel = new MenuItem("Créer un nouvel modèle");
+		MenuItem newModel = new MenuItem("Créer un nouvel modèle");newModel.setId("menuitem");
 
 		// Charger un modèle
-		MenuItem loadModel = new MenuItem("Charger un modèle");
+		MenuItem loadModel = new MenuItem("Charger un modèle");loadModel.setId("menuitem");
 
 		// Savegrder le modèle
-		MenuItem saveModel = new MenuItem("Savegrder le modèle");
+		MenuItem saveModel = new MenuItem("Savegrder le modèle");saveModel.setId("menuitem");
 
 		// Quitter
-		MenuItem exit = new MenuItem("Quitter");
+		MenuItem exit = new MenuItem("Quitter");exit.setId("menuitem");
 
 		this.getItems().addAll(newModel, new SeparatorMenuItem(), loadModel,
 				saveModel, new SeparatorMenuItem(), exit);
@@ -169,16 +174,17 @@ public class Menu_File extends Menu {
 	 **/
 	private void loadModel() {
 		// TODO Auto-generated method stub
-		loadClusterer();
-		loadMenu = new LoadForm(classit);
-		//Activer le menu Affichage
-		((Menu_Affichage) sourceMenu.getAffichageMenu()).setCurrentModel(classit);
+		if(loadClusterer() != null){
+			loadMenu = new LoadForm(classit);
+			//Activer le menu Affichage
+			((Menu_Affichage) sourceMenu.getAffichageMenu()).setCurrentModel(classit);
+		}
 	}
 	/**
 	 * 
 	 * Chargement du modèle
 	 */
-	private void loadClusterer(){
+	private Object loadClusterer(){
 		FileChooser loadFile = new FileChooser();
 		loadFile.setTitle("Charger");
 		File f = loadFile.showOpenDialog(new Stage());//récupèrer le fichier
@@ -202,7 +208,9 @@ public class Menu_File extends Menu {
 				e.printStackTrace();
 				System.err.println("Erreur lors du chargement du modele");
 			}
-		}	
+			return f;
+		}else
+			return null;
 	}
 	/**
 	 * Mise en forme de la fenêtre "créer un modele"
@@ -293,14 +301,38 @@ public class Menu_File extends Menu {
 		Stage stage = new Stage();
 		BorderPane main = new BorderPane();
 		Scene scene = new Scene(main);
+		stage.setScene(scene);
 		Button btnLaunch = new Button("Lancer");
-		ProgressBar pbSystem = new ProgressBar();
+		pbClustering = new ProgressBar();
+		settingClassit();
+		
+		ConfirmForm confirm = new ConfirmForm(classit);
+		confirm.create();
+		btnLaunch.setOnAction(new EventHandler<ActionEvent>() {
 
+			@Override
+			public void handle(ActionEvent event) {
+				// TODO Auto-generated method stub
+				startTheSystem();
+				((Button)event.getSource()).getScene().getWindow().hide();
+			}
+		});
+
+		stage.setResizable(false);
+		main.setTop(confirm);
+		main.setCenter(btnLaunch);
+		main.setBottom(pbClustering);
+		main.setAlignment(pbClustering, Pos.BOTTOM_CENTER);
+		
+		stage.show();
+	}
+
+	private void settingClassit() {
+		// TODO Auto-generated method stub
 		Indexer index = new Indexer();
 		index.setStemming(stemming);
-		System.out.println(pathLearningSet);
+		//System.out.println(pathLearningSet);
 		index.init(pathLearningSet);
-
 		classit = new IncrementalClustering(modelName, index);
 		classit.setModelName(modelName);
 		classit.setPathLearningSet(pathLearningSet);
@@ -317,22 +349,6 @@ public class Menu_File extends Menu {
 		classit.setMaxTermNb(maxTermNb);
 		classit.setCutoff(cutoff);
 		classit.setAcuity(acuity);
-		ConfirmForm confirm = new ConfirmForm(classit);
-		confirm.create();
-		btnLaunch.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				// TODO Auto-generated method stub
-				startTheSystem();
-			}
-		});
-
-		stage.setResizable(false);
-		main.setTop(confirm);
-		main.setCenter(btnLaunch);
-		stage.setScene(scene);
-		stage.show();
 	}
 
 	/**
@@ -340,11 +356,9 @@ public class Menu_File extends Menu {
 	 */
 	protected void startTheSystem() {
 		// TODO Auto-generated method stub
-
-
 		classit.prepareInstances();
-		
 		try {
+			classit.setState(pbClustering);
 			classit.startClustering();
 			//Sauvegarder la description DOT du graph
 			//Pour l'utiliser dans l'affichage
@@ -357,7 +371,8 @@ public class Menu_File extends Menu {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		createMenu = new LoadForm(classit);
+		scrollingView.setContent(createMenu);
 	}
 
 	// Segments de la fenêtre

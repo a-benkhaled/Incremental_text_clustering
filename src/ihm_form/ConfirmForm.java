@@ -14,6 +14,7 @@ public class ConfirmForm extends Form{
 	public int line = 0;
 	private String[] setValues  = {"Fréquences", "Poids (tf-idf)"};
 	private IncrementalClustering classit;
+	
 	public ConfirmForm(IncrementalClustering c) {
 		// TODO Auto-generated constructor stub
 		super();

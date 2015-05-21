@@ -12,7 +12,7 @@ public class Indexer implements Serializable{
 	protected ArrayList<Document> listOfDocument;
 	protected HashMap<String, Integer> termSpace;
 	protected HashMap<String, Integer> collectionFreq;//Apparence des terms dans la collections
-	ArrayList<WordsPattern> wordPatterns;
+	protected ArrayList<WordsPattern> wordPatterns;
 	protected int numberOfDoc;
 	protected int newDoxIndex;
 	protected boolean stemming = true;
@@ -78,12 +78,14 @@ public class Indexer implements Serializable{
         	listOfDocument.get(i).termWeights = weight;
         }
 	}
+	
 	/**
 	 * Utilisée dans le cas incrémental pour la représentation
 	 * des documents
 	 *  - Maj des comptage (fréquence par doc et par collection)
 	 * @return void
 	 */
+	
 	public void incIndex(String path){
 		collectionFreq = new HashMap<>();
 		File folder = new File(path);
@@ -133,6 +135,9 @@ public class Indexer implements Serializable{
 	
 	public int getNewDoxIndex() {
 		return newDoxIndex;
+	}
+	public HashMap<String, Integer> getCollectionFreq() {
+		return collectionFreq;
 	}
 
 	public void setStemming(boolean stemming) {

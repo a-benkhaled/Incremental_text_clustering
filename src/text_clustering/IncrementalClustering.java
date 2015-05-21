@@ -1,11 +1,13 @@
 package text_clustering;
 
+import ihm_form.Cobweb;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javafx.scene.control.ProgressBar;
 import doc.Document;
 import doc.Indexer;
-import weka.clusterers.Cobweb;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -34,9 +36,9 @@ public class IncrementalClustering extends Cobweb {
 	protected float cutoff = (float) 0.002;
 	protected float acuity = (float) 1.0;
 
-	protected Instances initDocSet;
+	
 	private Indexer index;
-
+	
 	public IncrementalClustering(String name, Indexer ind) {
 		// TODO Auto-generated constructor stub
 		super();
@@ -47,7 +49,6 @@ public class IncrementalClustering extends Cobweb {
 	public IncrementalClustering() {
 		// TODO Auto-generated constructor stub
 		super();
-
 	}
 
 	/**
@@ -237,12 +238,12 @@ public class IncrementalClustering extends Cobweb {
 				break;
 			}
 		}
+		this.updateFinished();
 	}
-
 	public void startClustering() {
 		// TODO Auto-generated method stub
 		try {
-			buildClusterer(initDocSet);
+			buildClusterer();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -404,6 +405,11 @@ public class IncrementalClustering extends Cobweb {
 
 	public Indexer getIndex() {
 		return index;
+	}
+
+	public void setState(ProgressBar pb) {
+		// TODO Auto-generated method stub
+		state = pb;
 	}
 
 }

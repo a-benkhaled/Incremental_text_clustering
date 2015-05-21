@@ -98,11 +98,17 @@ public class Document  implements Serializable{
 	}
 	
 	public int getTokenFreq(String t){
-		return termFrequencies.get(t);
+		if(termFrequencies.containsKey(t))
+			return termFrequencies.get(t);
+		else
+			return 0;
 	}
 	
 	public float getTokenWeight(String t){
-		return termWeights.get(t);
+		if(termWeights.containsKey(t))
+			return termWeights.get(t);
+		else
+			return 0;
 	}
 
 	public double[] getFreqAttr() {

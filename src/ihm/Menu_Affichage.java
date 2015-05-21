@@ -1,10 +1,14 @@
 package ihm;
 
+import ihm_chart.TermInfoChart;
+import ihm_chart.WordApperence;
+
 import java.io.IOException;
 import java.util.HashMap;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -23,9 +27,7 @@ import text_clustering.IncrementalClustering;
 public class Menu_Affichage extends Menu {
 	protected IncrementalClustering currentModel;
 
-	public Menu_Affichage() {
-
-	}
+	public Menu_Affichage() {}
 
 	public Menu_Affichage(String s) {
 		// TODO Auto-generated constructor stub
@@ -63,26 +65,21 @@ public class Menu_Affichage extends Menu {
 	}
 	
 	private void showStat(){
-		Stage stage = new Stage();
-		ScrollPane sp = new ScrollPane();
+		WordApperence chartWord = new WordApperence(currentModel.getIndex(), currentModel.getRepType());
+		TermInfoChart chartTerm = new TermInfoChart(currentModel.getIndex());
+		GUI.subMainView.setRight(null);
 		
-		CategoryAxis xAxis = new CategoryAxis();
-		NumberAxis yAxis = new NumberAxis();
-		BarChart<String,Number> bc = new BarChart<>(xAxis,yAxis);
+		BorderPane bpSubView = new BorderPane();
+		bpSubView.setScaleShape(true);
+		bpSubView.setCenter(chartWord);
+		bpSubView.setBottom(chartTerm);
+		chartWord.setScaleShape(true);
+		chartTerm.setScaleShape(true);
 		
-		xAxis.setLabel("Terms");
-		yAxis.setLabel("Fréquences");
-		XYChart.Series series = new XYChart.Series();
-		HashMap<String, Integer> voc = currentModel.getIndex().getTermSpace();
-		for(String term:voc.keySet()){
-			series.getData().add(new XYChart.Data(term, voc.get(term)));
-		}
-		sp.setContent(bc);
-		Scene sc = new Scene(sp);
-		bc.getData().addAll(series);
+		ScrollPane spMainView = new ScrollPane();
+		spMainView.setContent(bpSubView);
 		
-		stage.setScene(sc);
-		stage.show();
+		GUI.subMainView.setCenter(spMainView);
 	}
 	
 	private void showGraph() {

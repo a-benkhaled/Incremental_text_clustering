@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import text_clustering.IncrementalClustering;
@@ -20,8 +21,11 @@ public class LoadForm extends Form {
 	public LoadForm(IncrementalClustering c) {
 		// Mise en forme
 		Button btnAddDocx = new Button("Ajouter des documents");
+		Button btnEvaluate = new Button("Evaluer le modèle");
 		classit = c;
 		this.addRow(++line, new Label("Nom du modèle: "), new Label(classit.getModelName()));
+		this.add(new Separator(),0, ++line, 2, 1);
+		
 		this.addRow(++line, new Label("Ensemble d'apprentissage: "), new Label(
 				classit.getPathLearningSet()));
 		this.addRow(++line, new Label("Radicalisation: "), new Label(
@@ -61,15 +65,23 @@ public class LoadForm extends Form {
 				this.addRow(++line, new Label("Type de représentation: "),
 						new Label("Poids (tf-idf)"));
 		}
+		this.add(new Separator(),0, ++line, 2, 1);
 		
 		this.addRow(++line, new Label("Cutoff: "), new Label((float)classit.getCutoff() + ""));
 		this.addRow(++line, new Label("Acuity: "), new Label(classit.getAcuity() + ""));
+		this.add(new Separator(),0, ++line, 2, 1);
 		this.addRow(++line, new Label("Nombre de documents: "), 
 				new Label(classit.getIndex().getNumberOfDoc() + ""));
 		this.addRow(++line, new Label("Taille du vocabulaire: "), 
 				new Label(classit.getIndex().getTermSpace().size() + ""));
+		if(classit.getRepType() == 'e')
+			this.addRow(++line, new Label("Nombre d'ensemble fréquents: "), 
+					new Label(classit.getIndex().getWordPatterns().size() + ""));
+		this.add(new Separator(),0, ++line, 2, 1);
 		
 		this.addRow(++line, btnAddDocx);
+		this.addRow(++line, btnEvaluate);
+		
 		btnAddDocx.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -97,6 +109,15 @@ public class LoadForm extends Form {
 						e.printStackTrace();
 					}
 				}
+			}
+		});
+		btnEvaluate.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				// TODO Auto-generated method stub
+				System.out.println("Macro AVG" + classit.macroAverage());
+				System.out.println("Micro AVG" + classit.microAverage());
 			}
 		});
 	}
