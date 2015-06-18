@@ -1,5 +1,6 @@
 package ihm_form;
 import ihm.GUI;
+import ihm.Menu_File;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
@@ -18,7 +19,7 @@ public class MouseEnteredInfo implements EventHandler{
 		Text txthelp = new Text(msg);
 		txthelp.setId("lblhelp");
 		tmpInfo.getChildren().add(txthelp);
-		//GUI.infoMainView.setCenter(tmpInfo);
+		Menu_File.lblTooltip.setText(msg);
 	}
 
 }

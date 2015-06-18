@@ -1,19 +1,15 @@
 package ihm_form;
 
-import ihm.GUI;
-
 import java.io.File;
 
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 
 public class SelectPretraitForm extends Form {
 
@@ -25,7 +21,7 @@ public class SelectPretraitForm extends Form {
 	public int line = 0;
 	public SelectPretraitForm() {
 		// TODO Auto-generated constructor stub
-		lblSelect = new Label("Sélection et prétraitement de document");
+		lblSelect = new Label("Sélection et prétraitement des documents");
 		lblSelect.setId("title");
 		fcLearn = new Button("Ajouter");
 		fcUniverse = new Button("Ajouter");
@@ -134,11 +130,11 @@ public class SelectPretraitForm extends Form {
 			@Override
 			public void handle(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				DirectoryChooser  dc = new DirectoryChooser ();
+				FileChooser  dc = new FileChooser ();
 				dc.setTitle("Ajouter un script de prétraitement");
-				File selectedFile = dc.showDialog(formTmpStage);
+				File selectedFile = dc.showOpenDialog(formTmpStage);
 				if(selectedFile != null){
-					pathScript.append(selectedFile.getAbsolutePath()+ "\\");
+					pathScript.append(selectedFile.getAbsolutePath());
 				}
 			}
 		});

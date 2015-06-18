@@ -1,25 +1,23 @@
 package ihm;
 
-import ihm_chart.TermInfoChart;
-import ihm_chart.WordApperence;
+import ihm_chart.HierarchicalView;
+import ihm_chart.TermTable;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import text_clustering.IncrementalClustering;
@@ -63,32 +61,58 @@ public class Menu_Affichage extends Menu {
 		this.currentModel = cm;
 		this.setDisable(false);
 	}
-	
+
+	private ScrollPane sourceContainer;
+	private GridPane sourceContent;
+	public void setSourcePanel(ScrollPane cSource, GridPane pSource){
+		sourceContainer = cSource;
+		sourceContent = pSource;
+	}
 	private void showStat(){
-		WordApperence chartWord = new WordApperence(currentModel.getIndex(), currentModel.getRepType());
-		TermInfoChart chartTerm = new TermInfoChart(currentModel.getIndex());
+		//WordApperence chartWord = new WordApperence(currentModel.getIndex(), currentModel.getRepType());
+		//TermInfoChart chartTerm = new TermInfoChart(currentModel.getIndex());
+		HierarchicalView treeView = new HierarchicalView(currentModel);
+		TermTable termTable = new TermTable(currentModel);
 		GUI.subMainView.setRight(null);
 		
+		VBox vbTermTable = new VBox();
+		vbTermTable.getChildren().add(termTable.termTable());
+		if(currentModel.getRepType() =='e'){
+			vbTermTable.getChildren().add(termTable.wordSetTable());
+		}
 		BorderPane bpSubView = new BorderPane();
+		
 		bpSubView.setScaleShape(true);
-		bpSubView.setCenter(chartWord);
-		bpSubView.setBottom(chartTerm);
-		chartWord.setScaleShape(true);
-		chartTerm.setScaleShape(true);
+		//bpSubView.setCenter(chartWord);
+		//bpSubView.setBottom(chartTerm);
+		//chartWord.setScaleShape(true);
+		//chartTerm.setScaleShape(true);
 		
 		ScrollPane spMainView = new ScrollPane();
 		spMainView.setContent(bpSubView);
-		
+		GUI.subMainView.setLeft(treeView);
+		GUI.subMainView.setRight(vbTermTable);
 		GUI.subMainView.setCenter(spMainView);
+		HBox hbBtnRet = new HBox();
+		Button btnReturn = new Button("Retour");
+		hbBtnRet.getChildren().add(btnReturn);
+		btnReturn.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				// TODO Auto-generated method stub
+				GUI.subMainView.setCenter(sourceContainer);
+			}
+		});
+		
+
+		GUI.subMainView.setTop(btnReturn);
 	}
 	
 	private void showGraph() {
-		// TODO Auto-generated method stub
-
 		String dotPath = "data\\graphviz\\dot.exe";
 		String[] cmd = { dotPath, "-Tgif",
 				"data\\graph\\" + currentModel.getModelName() + ".graph" };
-		//System.out.println(currentModel.graph());
 		Runtime run = Runtime.getRuntime();
 		try {
 			Process pr = run.exec(cmd);
@@ -99,7 +123,7 @@ public class Menu_Affichage extends Menu {
 			box.setContent(iv);
 			Scene scene = new Scene(box);
 			scene.setFill(Color.WHITE);
-			stage.setTitle("ImageView");
+			stage.setTitle("Hiérarchie des documents");
 			stage.setWidth(415);
 			stage.setHeight(200);
 			stage.setScene(scene);

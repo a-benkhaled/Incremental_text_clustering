@@ -24,3 +24,9 @@ Separator{
 #mainPane{
 	-fx-fill-width: true;
 }
+HBox{
+	-fx-padding: 10,10,10,10;
+}
+VBox{
+	-fx-padding: 10,10,10,10;
+}

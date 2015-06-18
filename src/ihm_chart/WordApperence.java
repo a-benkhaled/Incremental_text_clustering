@@ -17,6 +17,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+/**
+ * Distribution des terms dans la collection
+ * @author G50
+ *
+ */
 
 public class WordApperence extends BorderPane{
 	/**
@@ -28,14 +33,14 @@ public class WordApperence extends BorderPane{
 	public WordApperence(Indexer index, char reptype){
 		CategoryAxis xAxis = new CategoryAxis();
 		NumberAxis yAxis = new NumberAxis();
-		HashMap<String, Integer> spaceFreq = index.getCollectionFreq();
+		HashMap<String, Integer> spaceFreq = index.getKbestTerms(3);
 		Button btnFreq = new Button("Fréquences");
 		Button btnDst = new Button("Densité");
 		HBox hb = new HBox();
 		hb.setPadding(new Insets(10,10,10,10));
 		hb.getChildren().add(btnFreq);
 		hb.getChildren().add(btnDst);
-		/** ***ACTIONS ************** */
+		/******ACTIONS ************** */
 		btnFreq.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override
@@ -46,11 +51,12 @@ public class WordApperence extends BorderPane{
 				XYChart.Series series = new XYChart.Series();
 				xAxis.setLabel("Terms");
 				yAxis.setLabel("Fréquences");
+				
 				for(String term:spaceFreq.keySet()){
 					series.getData().add(new XYChart.Data(term, spaceFreq.get(term)));
 					termPixel += 7;
 				}
-				bc.setPrefWidth(termPixel);
+				//bc.setPrefWidth(termPixel);
 				bc.getData().add(series);
 				((BorderPane)((HBox)((Button)arg0.getSource()).getParent()).getParent()).setCenter(bc);
 					

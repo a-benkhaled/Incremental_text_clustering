@@ -1,7 +1,5 @@
 package text_clustering;
 
-import ihm_form.Cobweb;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -33,8 +31,6 @@ public class IncrementalClustering extends Cobweb {
 	protected float maxSupp;
 	protected int minTermNb;
 	protected int maxTermNb;
-	protected float cutoff = (float) 0.002;
-	protected float acuity = (float) 1.0;
 
 	
 	private Indexer index;
@@ -70,6 +66,10 @@ public class IncrementalClustering extends Cobweb {
 	 */
 	
 	public void prepareInstances() {
+		//System.out.println("rep:" + repType);
+		//System.out.println("repWS:" + repTypeWSForm);
+
+		//System.out.println("repWS:" + repTypeWS);
 
 		if (repType == 'e') {// Ensemble de terms fréquents
 			// Extraction de motifs fréquents
@@ -92,7 +92,7 @@ public class IncrementalClustering extends Cobweb {
 			initDocSet = new Instances("docCollection", attributs,
 					index.getNumberOfDoc());
 
-			switch (repTypeWSForm) {// choice = 0 : Fréquences, choice = 1:
+			switch (repTypeWS) {// choice = 0 : Fréquences, choice = 1:
 									// poids
 			case 0:// Fréquences
 				for (Document d : index.getListOfDocument()) {
@@ -105,6 +105,16 @@ public class IncrementalClustering extends Cobweb {
 			case 1:// Poids
 				for (Document d : index.getListOfDocument()) {
 					d.getWordSetWeight(patt);
+					double tab[] = d.getWeightAttr();
+					/*
+					//misc.forsale_C14
+		        	if(d.getFileName().equals("misc.forsale_C14.txt")){
+		        		System.out.println("C14: w "+d.getTermWeights());
+		        		System.out.println("C14: nbD"+index.getNumberOfDoc());
+		        		for(String t:d.getTermWeights().keySet()){
+		        			System.out.println("\t "+t+": "+index.getCollectionFreq().get(t));
+		        		}
+		        	}*/
 					Instance e = new Instance(1, d.getWeightAttr(),
 							d.getFileName());
 					initDocSet.add(e);
@@ -329,11 +339,11 @@ public class IncrementalClustering extends Cobweb {
 	public void setMaxTermNb(int maxTermNb) {
 		this.maxTermNb = maxTermNb;
 	}
-
+/*
 	public void setCutoff(float cutoff) {
 		this.cutoff = cutoff;
 	}
-/*
+
 	public void setAcuity(float acuity) {
 		this.acuity = acuity;
 	}
@@ -406,10 +416,11 @@ public class IncrementalClustering extends Cobweb {
 	public Indexer getIndex() {
 		return index;
 	}
-
+/*
 	public void setState(ProgressBar pb) {
 		// TODO Auto-generated method stub
 		state = pb;
 	}
+*/
 
 }

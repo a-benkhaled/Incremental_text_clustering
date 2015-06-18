@@ -21,8 +21,8 @@ public class AlgoForm extends Form {
 		this.add(new Separator(), 0, ++line, 2, 1);
 		
 		//Valeurs par défaut
-		tfAcquity.setText("1.0");
-		tfCutoff.setText("0.002");
+		tfAcquity.setText("0.002");
+		tfCutoff.setText("1.0");
 	}
 	
 	public float getCutOff(){

@@ -20,15 +20,24 @@
  *
  */
 
-package ihm_form;
+package text_clustering;
 
+
+import ihm.Menu_File;
+
+import java.awt.event.KeyEvent;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Vector;
 
+import javafx.event.EventHandler;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.input.MouseEvent;
 import weka.clusterers.RandomizableClusterer;
 import weka.clusterers.UpdateableClusterer;
 import weka.core.AttributeStats;
@@ -190,6 +199,25 @@ public class Cobweb
       m_clusterInstances.add(leafInstance);
       updateStats(leafInstance, false);
     }
+    
+    public void buildTree(TreeItem<String> root) {
+		// TODO Auto-generated method stub
+		if (m_children != null){
+			TreeItem<String> item = new TreeItem<>(m_clusterClasse);
+			root.getChildren().add(item);
+			for (int i = 0; i < m_children.size(); i++) {//fils
+	  		  CNode temp = (CNode)m_children.elementAt(i);
+	  		  temp.buildTree(item);
+	  		}
+		}else{
+			for(int i=0; i<m_clusterInstances.numInstances(); i++){
+				Instance instance = m_clusterInstances.instance(i);
+				TreeItem<String> item = new TreeItem<>(instance.getName());
+				
+				root.getChildren().add(item);
+			}
+		}
+	}
     
     /**
      * Adds an instance to this cluster.
@@ -632,9 +660,67 @@ public class Cobweb
 	? (-1.0 * updateInstance.weight()) 
 	: (updateInstance.weight());
     }
+    
+    protected void comptage(int lvl, HashMap<String, Integer> map){
+    	if ( lvl == 0){//Niveau voulu
+        	if(m_children != null)
+        	for (int i = 0; i < m_children.size(); i++) {
+				  CNode child = (CNode) m_children.elementAt(i);
+				  child.comptage(lvl-1, map);
+  			}else{
+  				for(int i=0; i<m_clusterInstances.numInstances(); i++){
+        			String childClass =  m_clusterInstances.instance(i)
+        					.getName().split("\\.")[0];
+    	      		if (map.containsKey(childClass)){
+    	  			  int count  = map.get(childClass);
+    	  			  map.put(childClass, ++count);
+    	      		}else
+    	      			map.put(childClass, 1);
+        		}
+  			}
+    	}else{//Sous niveaux
+    		if((lvl<0) && (m_children == null)){
+    			for(int i=0; i<m_clusterInstances.numInstances(); i++){
+        			String childClass =  m_clusterInstances.instance(i)
+        					.getName().split("\\.")[0];
+    	      		if (map.containsKey(childClass)){
+    	  			  int count  = map.get(childClass);
+    	  			  map.put(childClass, ++count);
+    	      		}else
+    	      			map.put(childClass, 1);
+        		}
+    		}else{
+    			for (int i = 0; i < m_children.size(); i++) {
+  				  CNode child = (CNode) m_children.elementAt(i);
+  				  child.comptage(lvl-1, map);
+    			}
+    		}
+    	}
+    }
+   
+    protected int levelSize(int x, int lvl){
+    	if (m_children == null){
+    		return 0;
+    	}
+    	else{
+    		if(lvl < 1)
+    			return m_children.size();
+    		else{
+    			int c =0;
+    			lvl = lvl -1;
+    			for (int i = 0; i < m_children.size(); i++) {
+  				  CNode child = (CNode) m_children.elementAt(i);
+  				  c  += child.levelSize(x, lvl);
+    			}
+    			return c;
+    		}
+    	}
+    }
+    
     protected int truePositive;
     protected int falsePositive;
-    protected float macroAVG;
+    protected int falseNegative;
+    protected float precision;
     
 	public void falsePositiveSum(int[] fp){
 		if(m_children != null){
@@ -645,6 +731,7 @@ public class Cobweb
 			}
 		}
 	}
+	
 	public void truePositiveSum(int[] tp){
 		if(m_children != null){
 			  tp[0] += truePositive;
@@ -654,6 +741,17 @@ public class Cobweb
 			}
 		}
 	}
+	
+	public void falseNegativeSum(int[] fn){
+		if(m_children != null){
+			fn[0] += falseNegative;
+			for (int i = 0; i < m_children.size(); i++) {
+				  CNode child = (CNode) m_children.elementAt(i);
+				  child.falseNegativeSum(fn);
+			}
+		}
+	}
+	
 	public void tfPositiveSum(int[] p){
 		if(m_children != null){
 			  p[0] += truePositive;
@@ -664,34 +762,35 @@ public class Cobweb
 			}
 		}
 	}
-	public void computeMacroAVG(float[] avg) {
+	
+	public void computePMacroAVG(float[] avg) {
 		if(m_children != null){
-			avg[1]+=1;
-			avg[0] += macroAVG;
+			avg[1]+=1;//nombre de noeuds
+			avg[0] += precision;
 			for (int i = 0; i < m_children.size(); i++) {
 				  CNode child = (CNode) m_children.elementAt(i);
-				  child.computeMacroAVG(avg);
+				  child.computePMacroAVG(avg);
 			}
 		}
 	}
+
 	/**
      * Recursively assigns a class to each internal Node(cluster)
      */
     private HashMap<String, Integer> childrenClasses;//Dicionnaire temporaire
     
-    private String getClusterClasse(){
+	/**********************************************************************/  
+    private String getClusterClasse(String separator){
     	if (m_children == null){
     		childrenClasses = new HashMap<>();
     		for(int i=0; i<m_clusterInstances.numInstances(); i++){
     			String childClass =  m_clusterInstances.instance(i)
-    					.getName().split("\\.")[0];
+    					.getName().split(separator)[0];
 	      		if (childrenClasses.containsKey(childClass)){
 	  			  int count  = childrenClasses.get(childClass);
 	  			  childrenClasses.put(childClass, ++count);
 	      		}else
 	  			  childrenClasses.put(childClass, 1);
-	    		//m_clusterClasse =  m_clusterInstances.instance(0).getName().split("\\.")[0];
-	    		//System.out.println(m_clusterClasse);
     		}
     		int max = 0;
     		//assigner la classe
@@ -705,13 +804,15 @@ public class Cobweb
     	}else{
       	  	childrenClasses = new HashMap<>();
     		for (int i = 0; i < m_children.size(); i++) {
+    			//fréquence des classes
       		  CNode child = (CNode) m_children.elementAt(i);
-      		  String childClass =  child.getClusterClasse();
-	      		if (childrenClasses.containsKey(childClass)){
-	  			  int count  = childrenClasses.get(childClass);
+      		  String childClass =  child.getClusterClasse(separator);
+      		  if (childrenClasses.containsKey(childClass)){
+	      		int count  = childrenClasses.get(childClass);
 	  			  childrenClasses.put(childClass, ++count);
-	      		}else
+      		  }else
 	  			  childrenClasses.put(childClass, 1);
+      	
     		}
     		int max = 0;
     		//assigner la classe
@@ -721,12 +822,19 @@ public class Cobweb
       			  max = childrenClasses.get(classe);
       		  }
     		}
-    		macroAVG = (float)max / m_children.size();
+    		precision = (float)max / m_children.size();
+    		
     		//assigner le vrais + et -
     		truePositive = max;
     		falsePositive = Math.abs(max - m_children.size());
+
     		childrenClasses.clear();
-    		return m_clusterClasse;
+
+    		int pt = m_clusterClasse.lastIndexOf(".");
+    		if(pt!=-1){
+    			return m_clusterClasse.substring(0, pt);
+    		}else
+    			return m_clusterClasse;
     	}
     }
     /**
@@ -885,6 +993,28 @@ public class Cobweb
     public String getRevision() {
       return RevisionUtils.extract("$Revision: 6790 $");
     }
+
+	public void level(ArrayList<ArrayList<EvalNode>> lvlz, int l) {
+		// TODO Auto-generated method stub
+		if (m_children != null){
+			EvalNode eval = new EvalNode(precision, truePositive, falsePositive);
+			eval.setName(m_clusterClasse);
+
+			try{
+				lvlz.get(l).add(eval);
+			}catch (IndexOutOfBoundsException e){
+				while(lvlz.size()<=l){
+					lvlz.add(new ArrayList<>());
+				}
+				lvlz.get(l).add(eval);
+			}
+			l=l+1;
+			for (int i = 0; i < m_children.size(); i++) {//fils
+	    		  CNode temp = (CNode)m_children.elementAt(i);
+	    		  temp.level(lvlz, l);
+	    	}
+		}
+	}
   }
 
   /**
@@ -942,7 +1072,7 @@ public class Cobweb
   /**
    * Instances
    */
-  protected ProgressBar state;
+  //protected ProgressBar state;
 
   /**
    * default constructor
@@ -1047,15 +1177,16 @@ public class Cobweb
     	initDocSet.randomize(new Random(getSeed()));
     }
     for (int i = 0; i < initDocSet.numInstances(); i++) {
-        state.setProgress(1);
+      //  state.setProgress(1);
       updateClusterer(initDocSet.instance(i));
       System.out.println(((float)i*100 /initDocSet.numInstances() ));
-      state.setProgress(((double)i*100 /initDocSet.numInstances() ));
+     // state.setProgress(((double)i*100 /initDocSet.numInstances() ));
     }
     
     updateFinished();
   }
-  public float microAverage() {
+  
+  public float hierarchieMicroPrecision() {
 	  int[] falsePsum = new int[1];
 	  int[] truePsum =  new int[1];
 	  m_cobwebTree.truePositiveSum(truePsum);
@@ -1065,18 +1196,90 @@ public class Cobweb
   }
   /**
    * Compute the macroavg
-   * @param nbNode the number of instances.
    */
-  public float macroAverage() {
+  public float hierarchieMacroPrecision() {
 	  float[] macroAVGsum = new float[2];
-	  m_cobwebTree.computeMacroAVG(macroAVGsum);
+	  m_cobwebTree.computePMacroAVG(macroAVGsum);
 	  return ((float)macroAVGsum[0]/macroAVGsum[1]);
   }
+  
+  public HashMap<String, Integer> getMainClasses(){
+	  HashMap<String, Integer> mc= new HashMap<>();
+	  //Principale classes
+	   for(int i=0; i<m_cobwebTree.m_clusterInstances.numInstances(); i++){
+		  String fileName = m_cobwebTree.m_clusterInstances.instance(i).getName().split("\\.")[0];
+		  if(mc.containsKey(fileName)){
+			  int c = mc.get(fileName);
+			  mc.put(fileName, ++c);
+		  }else
+			  mc.put(fileName, 1);
+	  }
+	  return mc;
+  }
+ 
+  ArrayList<HashMap<String, Integer>> clusters = new ArrayList<>();
+  
+  public HashMap<String, Integer> getAllClasses(){ /*****************MOD***************************/
+	//hiérarchie des classes
+	  HashMap<String, Integer> nc = new HashMap<>();
+	  for(int i=0; i<m_cobwebTree.m_clusterInstances.numInstances(); i++){
+		  String fileName = m_cobwebTree.m_clusterInstances.instance(i).getName().split("_")[0];
+		  if(nc.containsKey(fileName)){
+			  int c = nc.get(fileName);
+			  nc.put(fileName, ++c);
+		  }else
+			  nc.put(fileName, 1);
+	  }
+	  return nc;
+  }
+  
+  public ArrayList<HashMap<String, Integer>> getClusters(HashMap<String, Integer> mc ){
+	  ArrayList<HashMap<String, Integer>> c= new ArrayList<>();
+	  //System.out.println("**"+ mc.size());
+	  int lvl = getLevel(mc.size());
+	  //System.out.println("++"+lvl);
+	  for (int i = 0; i < m_cobwebTree.m_children.size(); i++) {
+		  HashMap<String, Integer> tmp = new HashMap<>();
+		  CNode temp = (CNode)m_cobwebTree.m_children.elementAt(i);
+		  temp.comptage(lvl-1, tmp);
+		  c.add(tmp);
+	  }
+	  return c;
+  }
+  
+/**
+ * ségmenter la hiérarchie selon le nombre de classes 
+ * (résultats approximés)
+ * @param desiredNb le nombre de classes
+ * @return nombre de partition (clusters)
+ **/
+  
+public int getLevel(int desiredNb){
+	  if (desiredNb == m_cobwebTree.m_children.size()){
+		  return 1;
+	  }else{
+		  int count = -100;
+		  int dif = -1;
+		  int lvl = 0;
+		  while((lvl<10) && (Math.abs(count - desiredNb)<3)){
+			  count = 0;
+			  for (int i = 0; i < m_cobwebTree.m_children.size(); i++) {
+				  CNode temp = (CNode)m_cobwebTree.m_children.elementAt(i);
+				  count += temp.levelSize(desiredNb, lvl);
+			  }
+			  lvl++;
+		  }
+		  return lvl +1;
+	  }		  
+  }
+  
   /**
    * Assign classes at the end of the updating.
    */
   public void assignClasses() {
-	  m_cobwebTree.getClusterClasse();
+
+	  /**********************************************************************/
+	  m_cobwebTree.getClusterClasse("_");
   }
   /**
    * Singals the end of the updating.
@@ -1095,12 +1298,12 @@ public class Cobweb
    * @throws Exception if instance could not be classified
    * successfully
    */
+  
   public int clusterInstance(Instance instance) throws Exception {
     CNode host = m_cobwebTree;
     CNode temp = null;
     
     determineNumberOfClusters();
-    
     do {
       if (host.m_children == null) {
 	temp = null;
@@ -1430,8 +1633,47 @@ public class Cobweb
   }
 
 @Override
-public void buildClusterer(Instances arg0) throws Exception {
-	// TODO Auto-generated method stub
+	public void buildClusterer(Instances data) throws Exception {
+	    m_numberOfClusters = -1;
+	    m_cobwebTree = null;
+	    m_numberSplits = 0;
+	    m_numberMerges = 0;
 	
+	    // can clusterer handle the data?
+	    getCapabilities().testWithFail(data);
+	
+	    // randomize the instances
+	    //data = new Instances(data);
+	    
+	    if (getSeed() >= 0) {
+	      data.randomize(new Random(getSeed()));
+	    }
+	
+	    for (int i = 0; i < data.numInstances(); i++) {
+	      updateClusterer(data.instance(i));
+	      System.out.println((i*100 /data.numInstances() )+1 + "%");
+	      Menu_File.taOutput.appendText((i*100 /data.numInstances() )+1 + "%\n");
+	    }
+	    
+	    updateFinished();
+	  }
+/**
+ * Construire une TreeView de la hiérarchie
+ * afin de simplifier sa visualisation
+ * @return
+ */
+public TreeView getTree(){
+	TreeItem<String> root = new TreeItem<>("Hierarchie");
+	m_cobwebTree.buildTree(root);
+	return (new TreeView<> (root));
 }
+
+	
+	public ArrayList<ArrayList<EvalNode>>  extractLevels() {
+	// TODO Auto-generated method stub
+		ArrayList<ArrayList<EvalNode>> lvlz = new ArrayList<>();
+		m_cobwebTree.level(lvlz, 1);
+		return lvlz;
+		
+	}
 }

@@ -1,5 +1,6 @@
 package ihm_form;
 import ihm.GUI;
+import ihm.Menu_File;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
@@ -11,7 +12,7 @@ public class MouseExitedInfo implements EventHandler{
 	public void handle(Event arg0) {
 		// TODO Auto-generated method stub
 		VBox empty = new VBox();
-		//GUI.infoMainView.setCenter(empty);
+		Menu_File.lblTooltip.setText("");
 	}
 
 }

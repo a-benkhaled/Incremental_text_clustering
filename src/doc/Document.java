@@ -3,6 +3,7 @@ package doc;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 import word_mining.WordsPattern;
@@ -88,6 +89,35 @@ public class Document  implements Serializable{
 			}
 		}
 	}
+	public HashSet<String> getBestTerms(int x){
+		if (x >= termWeights.size()){
+			return (HashSet<String>) termWeights.keySet();
+		}else{
+			HashSet<String> best = new HashSet<>(x);
+			float w = 0;
+			for(String t:termWeights.keySet()){
+				if((best.isEmpty()) || (best.size()<x))
+					best.add(t);
+				else{
+					for(int i=0; i<best.toArray().length; i++){
+						if (termWeights.get(best.toArray()[i])<termWeights.get(t)){
+							best.remove(best.toArray()[i]);
+							best.add(t);
+						}
+					}
+					/*
+					for(String b:best){
+						if (termWeights.get(t)>termWeights.get(b)){
+							best.remove(b);
+							best.add(t);
+						}
+					}
+					*/
+				}
+			}
+			return best;
+		}
+	}
 	
 	public ArrayList<String> getTransaction() {
 		return transaction;
@@ -122,5 +152,7 @@ public class Document  implements Serializable{
 	public HashMap<String, Float> getTermWeights() {
 		return termWeights;
 	}
-	
+	public HashMap<String, Integer> getTermFrequency() {
+		return termFrequencies;
+	}
 }

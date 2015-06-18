@@ -16,7 +16,13 @@ public class WordsPattern implements Serializable{
 	public HashSet<String> getWordSet() {
 		return wordSet;
 	}
-
+	
+	
+	public float getSupport() {
+		return support;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "" + wordSet ;

@@ -32,10 +32,13 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -57,7 +60,8 @@ public class Menu_File extends Menu {
 	private IHMenu sourceMenu;
 	private BorderPane infoMainView;
 	private ScrollPane scrollingView;
-	
+	public static TextArea taOutput;
+	public static Label lblTooltip;
 	protected ProgressBar pbClustering;
 	
 	public Menu_File(String name, IHMenu sm) {
@@ -70,6 +74,17 @@ public class Menu_File extends Menu {
 		infoMainView.setTop(lblHelp);
 		scrollingView = new ScrollPane();
 		scrollingView.setMinWidth(470);
+		
+		VBox hbOutput = new VBox();
+		lblTooltip=new Label();
+		hbOutput.getChildren().add(lblTooltip);
+		hbOutput.getChildren().add(new Label("Console"));
+		taOutput = new TextArea();
+		taOutput.setEditable(false);
+		hbOutput.getChildren().add(taOutput);
+		
+		infoMainView.setCenter(hbOutput);
+		//taOutput.appendText("**************************");
 		
 		/* *************** AFFICHAGE **************** ** */
 		// Menu bar items
@@ -99,6 +114,7 @@ public class Menu_File extends Menu {
 				createNewModel();
 				GUI.subMainView.setCenter(scrollingView);
 				GUI.subMainView.setRight(infoMainView);
+				GUI.subMainView.setLeft(null);
 				scrollingView.setContent(createMenu);
 			}
 		});
@@ -175,7 +191,7 @@ public class Menu_File extends Menu {
 	private void loadModel() {
 		// TODO Auto-generated method stub
 		if(loadClusterer() != null){
-			loadMenu = new LoadForm(classit);
+			loadMenu = new LoadForm(classit, null, null);
 			//Activer le menu Affichage
 			((Menu_Affichage) sourceMenu.getAffichageMenu()).setCurrentModel(classit);
 		}
@@ -206,16 +222,17 @@ public class Menu_File extends Menu {
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				System.err.println("Erreur lors du chargement du modele");
+				System.err.println("Erreur lors du chargement du modèle");
 			}
 			return f;
 		}else
 			return null;
 	}
+	
 	/**
 	 * Mise en forme de la fenêtre "créer un modele"
 	 **/
-
+	
 	private void createNewModel() {
 		createMenu = new GridPane();
 		int line = 0;
@@ -270,7 +287,7 @@ public class Menu_File extends Menu {
 	private void extractionParam() {
 		// TODO Auto-generated method stub
 		// Nom du modèle
-		modelName =formInfo.getModelName() ;
+		modelName = formInfo.getModelName() ;
 
 		// Selection et prétraitement
 		pathLearningSet = formSelectPret.getPathLearnSet();
@@ -299,6 +316,7 @@ public class Menu_File extends Menu {
 	protected void createConfirmWin() {
 		// TODO Auto-generated method stub
 		Stage stage = new Stage();
+		stage.setResizable(true);
 		BorderPane main = new BorderPane();
 		Scene scene = new Scene(main);
 		stage.setScene(scene);
@@ -313,16 +331,15 @@ public class Menu_File extends Menu {
 			@Override
 			public void handle(ActionEvent event) {
 				// TODO Auto-generated method stub
+				
 				startTheSystem();
 				((Button)event.getSource()).getScene().getWindow().hide();
 			}
 		});
-
-		stage.setResizable(false);
 		main.setTop(confirm);
 		main.setCenter(btnLaunch);
 		main.setBottom(pbClustering);
-		main.setAlignment(pbClustering, Pos.BOTTOM_CENTER);
+		//main.setAlignment(pbClustering, Pos.BOTTOM_CENTER);
 		
 		stage.show();
 	}
@@ -331,8 +348,11 @@ public class Menu_File extends Menu {
 		// TODO Auto-generated method stub
 		Indexer index = new Indexer();
 		index.setStemming(stemming);
+		index.setPathScript(pathScript);
 		//System.out.println(pathLearningSet);
+		index.setAdditionnelVocabulary(pathTermSpaceSet);
 		index.init(pathLearningSet);
+		
 		classit = new IncrementalClustering(modelName, index);
 		classit.setModelName(modelName);
 		classit.setPathLearningSet(pathLearningSet);
@@ -354,24 +374,30 @@ public class Menu_File extends Menu {
 	/**
 	 * Lancer le système de clustering
 	 */
+	
 	protected void startTheSystem() {
 		// TODO Auto-generated method stub
+		long startTime = System.currentTimeMillis();
 		classit.prepareInstances();
 		try {
-			classit.setState(pbClustering);
+			//classit.setState(pbClustering);
 			classit.startClustering();
+			long endTime = System.currentTimeMillis();
+			System.out.println(((float)endTime - endTime)/1000);
 			//Sauvegarder la description DOT du graph
 			//Pour l'utiliser dans l'affichage
 			FileWriter fstream = new FileWriter("data\\graph\\"+classit.getModelName()+".graph");
+			
 			BufferedWriter out = new BufferedWriter(fstream);
 			out.write(classit.graph());
 			out.close();
 			((Menu_Affichage) sourceMenu.getAffichageMenu()).setCurrentModel(classit);
+			((Menu_Affichage) sourceMenu.getAffichageMenu()).setSourcePanel(scrollingView, createMenu);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		createMenu = new LoadForm(classit);
+		createMenu = new LoadForm(classit, scrollingView, createMenu);
 		scrollingView.setContent(createMenu);
 	}
 
